@@ -7,13 +7,19 @@ import sqlparse
 from panflute import *
 import sqlparse
 
-host = getenv("MYSQL_HOST", "127.0.0.1")
-user = getenv("MYSQL_USER", "root")
-passwd = getenv("MYSQL_PASSWORD", "secret")
-db = getenv("MYSQL_DATABASE", "trlog")
-
-
 def action(options, data, element, doc):
+    doc.host   = str(doc.get_metadata('host', default='127.0.0.1'))
+    doc.user   = str(doc.get_metadata('user', default='root'))
+    doc.passwd = str(doc.get_metadata('passwd', default='toor'))
+    doc.db     = str(doc.get_metadata('db', default='db'))
+    db = MySQLdb.connect(
+            host=doc.host,
+            user=doc.user, 
+            passwd=doc.passwd,
+            db=doc.db
+            )
+
+
     if isinstance(options, dict):
         no_result = options.get("no_result", False)
     else:
@@ -55,6 +61,4 @@ def action(options, data, element, doc):
 
 
 if __name__ == "__main__":
-    db = MySQLdb.connect(host=host, user=user, passwd=passwd, db=db)
     run_filter(yaml_filter, tag="runsql", function=action)
-    db.close()
